@@ -7,7 +7,13 @@ import re
 import requests
 import logging
 from typing import Tuple, Optional, Dict, Any
-from config import settings
+
+# IMPORT ROBUSTO: intenta import relativo (cuando se ejecuta como paquete)
+# y si falla, hace fallback al import absoluto (ejecución local).
+try:
+    from .config import settings
+except Exception:
+    from config import settings
 
 logger = logging.getLogger(__name__)
 
