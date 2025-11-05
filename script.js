@@ -103,7 +103,7 @@ function loadCredits() {
     }
 }
 
-// Mostrar sólo CC + VIVA/MUERTA en el log
+// Mostrar CC con su estado real (VIVA / MUERTA / COOKIE EXPIRADA)
 function updateLogDisplay() {
     if (!resultsSection || !formSection) return;
 
@@ -121,7 +121,7 @@ function updateLogDisplay() {
 
     if (currentFilter !== 'all') {
         if (currentFilter === 'ERROR') {
-            // aunque mapa everything to MUERTA for display, allow filter to still show relevant entries
+            // Mostrar en la pestaña ERROR: ERROR, COOKIE_EXPIRADA, DESCONOCIDO
             filteredLogs = results.logs.filter(log =>
                 log.estado === 'ERROR' || log.estado === 'COOKIE_EXPIRADA' || log.estado === 'DESCONOCIDO'
             );
@@ -137,17 +137,30 @@ function updateLogDisplay() {
     // Reversa para mostrar lo último arriba
     filteredLogs.slice().reverse().forEach(log => {
         const item = document.createElement('div');
-
-        // Map any estado to only VIVA or MUERTA for display
-        let displayText = '❌ MUERTA';
-        if (log.estado === 'VIVA') displayText = '✅ VIVA';
-        // otherwise display as MUERTA (this hides ERROR/COOKIE_EXPIRADA/DESCONOCIDO)
         item.className = 'log-item';
+
+        let displayText = '';
+        let emoji = '';
+
+        if (log.estado === 'VIVA') {
+            emoji = '✅';
+            displayText = 'VIVA';
+        } else if (log.estado === 'MUERTA') {
+            emoji = '❌';
+            displayText = 'MUERTA';
+        } else if (log.estado === 'COOKIE_EXPIRADA' || log.estado === 'ERROR' || log.estado === 'DESCONOCIDO') {
+            emoji = '⚠️';
+            displayText = 'COOKIE EXPIRADA';
+        } else {
+            // Cualquier otro caso no esperado se muestra como MUERTA
+            emoji = '❌';
+            displayText = 'MUERTA';
+        }
 
         item.innerHTML = `
             <div class="log-cc">
                 ${log.cc}
-                <span class="log-result">${displayText}</span>
+                <span class="log-result">${emoji} ${displayText}</span>
             </div>
         `;
 
@@ -352,4 +365,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
