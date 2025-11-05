@@ -13,9 +13,9 @@ import traceback
 import urllib3
 from datetime import datetime
 
-# Importar configuración y servicios
-from config import settings
-from services import (
+# Importar configuración y servicios (USANDO . PARA IMPORTACIONES RELATIVAS)
+from .config import settings
+from .services import (
     ValidationService, 
     CreditService, 
     CheckerService, 
@@ -24,12 +24,13 @@ from services import (
 )
 
 # Configuración de logging
+# IMPORTANTE: Se elimina logging.FileHandler porque Vercel no permite escribir archivos en disco.
 logging.basicConfig(
     level=getattr(logging, settings.log.LEVEL),
     format=settings.log.FORMAT,
     handlers=[
-        logging.FileHandler(settings.log.FILE),
-        logging.StreamHandler()
+        # logging.FileHandler(settings.log.FILE), # ESTA LÍNEA ES ELIMINADA/COMENTADA
+        logging.StreamHandler() # Solo se usa el StreamHandler para logs en la consola de Vercel
     ]
 )
 logger = logging.getLogger(__name__)
@@ -253,25 +254,8 @@ def internal_error(error):
         "timestamp": datetime.now().isoformat()
     }), 500
 
-if __name__ == '__main__':
-    logger.info("=" * 50)
-    logger.info("ZHENTIO CHECKER API v2.0")
-    logger.info("=" * 50)
-    logger.info(f"Servidor iniciando en http://{settings.flask.HOST}:{settings.flask.PORT}")
-    logger.info("Presiona Ctrl+C para detener el servidor")
-    logger.info("=" * 50)
-    
-    try:
-        app.run(
-            host=settings.flask.HOST,
-            port=settings.flask.PORT,
-            debug=settings.flask.DEBUG,
-            threaded=settings.flask.THREADED,
-            use_reloader=True
-        )
-    except KeyboardInterrupt:
-        logger.info("Servidor detenido por el usuario")
-    except Exception as e:
-        logger.error(f"Error al iniciar el servidor: {str(e)}")
-    finally:
-        logger.info("Cerrando aplicación...")
+# IMPORTANTE: Se elimina todo el bloque `if __name__ == '__main__':`
+# Vercel solo importa la variable 'app', no ejecuta el bloque del servidor local.
+# if __name__ == '__main__':
+#     logger.info("=" * 50)
+#     # ... (código de ejecución local eliminado)
