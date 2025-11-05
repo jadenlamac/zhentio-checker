@@ -1,0 +1,34 @@
+<svg width="120" height="120" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sombra exterior -->
+  <circle cx="32" cy="32" r="24" fill="url(#shadow)" />
+  <!-- Base de la galleta -->
+  <circle cx="32" cy="32" r="22" fill="url(#cookieGradient)" stroke="#9a6b2f" stroke-width="1.2" />
+  <!-- Sombras internas suaves -->
+  <circle cx="29" cy="28" r="20" fill="url(#innerShadow)" opacity="0.4" />
+  <!-- Chips -->
+  <circle cx="24" cy="26" r="2" fill="#3c240a"/>
+  <circle cx="40" cy="24" r="2" fill="#3c240a"/>
+  <circle cx="42" cy="34" r="2.2" fill="#3c240a"/>
+  <circle cx="28" cy="40" r="2.2" fill="#3c240a"/>
+  <circle cx="34" cy="31" r="1.6" fill="#3c240a"/>
+  <!-- Mordida -->
+  <path d="M49 25c-1.4 0-2.4-0.8-3.2-1.7-0.9-1.1-1.4-2.4-1.4-4a6 6 0 0 0-4.2 1.9c-1 1-1.6 2.5-1.3 4 .2 1 .6 1.8 1.2 2.6a5 5 0 0 1-3.2-.6c-1.1-.6-2-1.6-2.3-2.8-.6 2.2.3 4.6 1.8 6.2 1.6 1.7 4 2.6 6.4 2.4 2.1-.1 4.2-.8 5.7-2.2 1.7-1.3 2.5-3.5 2.2-5.8-.5-.1-.9-.2-1.4-.3z" fill="#e0ad5f"/>
+  <!-- Brillo -->
+  <ellipse cx="26" cy="22" rx="7" ry="4" fill="white" opacity="0.15"/>
+  
+  <!-- Gradientes -->
+  <defs>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cookieGradient" cx="0.4" cy="0.3" r="1">
+      <stop offset="0%" stop-color="#f5c56a"/>
+      <stop offset="100%" stop-color="#b37a2e"/>
+    </radialGradient>
+    <radialGradient id="innerShadow" cx="0.6" cy="0.7" r="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

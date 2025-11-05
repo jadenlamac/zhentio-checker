@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZHENTIO CHECKER</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page">
+
+        <!-- TOPBAR eliminada -->
+
+        <section class="card main">
+            <div class="header">
+                <h1>ZHENTIO CHECKER</h1>
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="start-btn">▶ INICIAR</button>
+                <button class="btn" id="pause-btn" disabled>⏸ PAUSAR</button>
+                <button class="btn" id="stop-btn" disabled>⬛ PARAR</button>
+                <button class="btn" id="clear-btn">🗑️ LIMPIAR</button>
+
+                <div class="status" id="checker-status">
+                    <span class="rec"></span> Detenido.
+                </div>
+            </div>
+
+            <div class="iconbar">
+                <button class="icon active" data-filter="all" title="Todas las tarjetas">
+                    <img src="icons/card.svg" alt="Card">
+                    <span class="icon-counter" id="icon-count-TOTAL">0</span>
+                </button>
+                <button class="icon" data-filter="VIVA" title="Aprobadas">
+                    <img src="icons/like.svg" alt="Like">
+                    <span class="icon-counter" id="icon-count-VIVA">0</span>
+                </button>
+                <button class="icon" data-filter="MUERTA" title="Reprobadas">
+                    <img src="icons/dislike.svg" alt="Dislike">
+                    <span class="icon-counter" id="icon-count-MUERTA">0</span>
+                </button>
+                <button class="icon" data-filter="ERROR" title="Errores">
+                    <img src="icons/close.svg" alt="Error">
+                    <span class="icon-counter" id="icon-count-ERROR">0</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="card stats">
+            <div class="stat">Aprobadas: <span class="chip" id="count-VIVA">0</span></div>
+            <div class="stat">Reprobadas: <span class="chip" id="count-MUERTA">0</span></div>
+            <div class="stat">Errores: <span class="chip" id="count-ERROR">0</span></div>
+            <div class="stat">Testeadas: <span class="chip" id="count-TESTED">0</span></div>
+            <div class="stat">Total: <span class="chip" id="count-TOTAL">0</span></div>
+        </section>
+
+        <section class="card form" id="form-section">
+            <div class="field">
+                <label for="cookie-area">
+                    <img 
+                        src="icons/galleta.svg" 
+                        alt="Cookies" 
+                        style="width: 1.2em; vertical-align: middle; margin-right: 0.2em;"
+                    > 
+                    Cookies
+                </label>
+                <p class="hint">Pega aquí la cadena completa de tu cookie.</p>
+                <textarea id="cookie-area"></textarea>
+            </div>
+            <div class="field">
+                <label for="cc-list-area">
+                    <img 
+                        src="icons/tarjeta.svg" 
+                        alt="Lista de tarjetas" 
+                        style="width: 1.2em; vertical-align: middle; margin-right: 0.2em;"
+                    > 
+                    Lista de tarjetas:
+                </label>
+                <p class="hint">Ingrese su lista (formato CC|MM|AAAA|CVV) una por línea.</p>
+                <textarea id="cc-list-area"></textarea>
+            </div>
+        </section>
+
+        <section class="card results" id="results-section" style="display: none;">
+            <h2>Resultados del Chequeo (<span id="log-filter-title">Todas</span>)</h2>
+            <div class="log-container" id="log-container"></div>
+        </section>
+    </div>
+    
+    <script src="script.js"></script>    
+</body>
+</html>
