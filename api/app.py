@@ -82,17 +82,15 @@ def home():
         }
     )
 
-@app.route("/health", methods=["GET"])
+@app.route("/health", methods=["GET", "HEAD"])
 def health_check():
     """Endpoint de verificación de salud del servicio"""
-    return jsonify(
-        {
-            "status": "OK",
-            "service": "Zhentio Checker API",
-            "version": "2.0",
-            "timestamp": datetime.now().isoformat(),
-        }
-    )
+    return jsonify({
+        "status": "OK",
+        "service": "Zhentio Checker API",
+        "version": "2.0",
+        "timestamp": datetime.now().isoformat()
+    })
 
 @app.route("/check_cc", methods=["POST", "OPTIONS"])
 def check_cc():
@@ -279,3 +277,4 @@ def internal_error(error):
 
 # Nota: NO incluir bloque if __name__ == "__main__"
 # Vercel importa la variable 'app' directamente.
+
