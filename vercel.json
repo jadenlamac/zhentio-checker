@@ -5,13 +5,10 @@
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "style.css", "use": "@vercel/static" },
     { "src": "script.js", "use": "@vercel/static" },
-    { "src": "icons/(.*)", "use": "@vercel/static" }
+    { "src": "icons/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "^/api/(.*)$", "dest": "/api/app.py" },
-    { "src": "^/icons/(.*)$", "dest": "/icons/$1" },
-    { "src": "^/(.*\\.(css|js|html))$", "dest": "/$1" },
-    { "src": "^(?!/api/).*$", "dest": "/index.html" }
+    { "src": "^/api/(.*)$", "dest": "api/app.py" },
+    { "src": "^(?!/api/).*", "dest": "/$1" }
   ]
 }
-
