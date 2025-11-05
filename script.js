@@ -128,13 +128,16 @@ function updateLogDisplay() {
         };
 
         item.className = 'log-item';
+
+        // ====== ÚNICO CAMBIO: solo una línea con CC + estado (sin N/A) ======
         item.innerHTML = `
-            <div class="log-cc">${log.flag} ${log.cc}</div>
-            <div class="log-result-info">
-                <span class="log-meta">${log.banco} | ${log.pais}</span>
+            <div class="log-cc">
+                ${log.cc}
                 <span class="log-result result-${statusMap[estadoClase]}">${estadoTexto}</span>
             </div>
         `;
+        // =====================================================================
+
         if (logContainer) logContainer.appendChild(item);
     });
 }
