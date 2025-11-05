@@ -1,11 +1,4 @@
 :root {
-/* ==========================================================
-   ZHENTIO CHECKER - ESTILOS PRINCIPALES
-   Versión: 2.0 | Autor: Sistema Zhentio
-   ========================================================== */
-
-/* VARIABLES DE COLOR */
-:root {
   --bg: #0d0d0d;
   --card: #0a0a0a;
   --border: #1a1a1a;
@@ -14,11 +7,7 @@
   --accent: #f7c14c; /* dorado suave */
 }
 
-/* RESET */
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: "Inter", system-ui, sans-serif;
@@ -29,8 +18,45 @@ body {
 /* PAGE */
 .page {
   max-width: 960px;
-  margin: 40px auto;
-  padding: 0 16px 40px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0a0a0a;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+}
+.btn.logout {
+  background: #000;
+  border: 1px solid #222;
+  padding: 6px 12px;
+  color: #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.square {
+  display:inline-block;
+  width:10px;height:10px;
+  background:#ff5c33;
+  border-radius:2px;
+  margin-right:6px;
 }
 
 /* CARD */
@@ -40,7 +66,7 @@ body {
   border-radius: 12px;
   padding: 14px;
   margin-top: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0,0,0,.6);
 }
 
 /* HEADER */
@@ -55,7 +81,7 @@ h1 {
   color: #fff;
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: .5px;
 }
 
 /* CONTROLS */
@@ -75,11 +101,9 @@ h1 {
   font-size: 14px;
   color: #dcdcdc;
   background: #0d0d0d;
-  transition: 0.2s;
+  transition: .2s;
 }
-.btn:hover {
-  background: #111;
-}
+.btn:hover { background: #111; }
 .status {
   margin-left: auto;
   font-size: 14px;
@@ -104,7 +128,6 @@ h1 {
   gap: 10px;
   margin-top: 12px;
   justify-content: flex-start;
-  align-items: center;
 }
 .icon {
   width: 42px;
@@ -113,25 +136,31 @@ h1 {
   border: 1px solid #222;
   border-radius: 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: none;
+  transition: .2s;
+  position: relative;
 }
 .icon img {
   width: 18px;
   height: 18px;
   filter: brightness(1.3) sepia(1) hue-rotate(20deg) saturate(1.2);
-}
-.icon:hover {
-  background: #0d0d0d;
-}
-.icon.active {
-  border-color: #222;
-  box-shadow: none;
+  margin-bottom: 2px;
 }
 .icon-counter {
-  display: none;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 16px;
+  text-align: center;
+  line-height: 1;
+}
+.icon:hover { background: #111; }
+.icon.active {
+  border-color: var(--accent);
+  box-shadow: none;
 }
 
 /* STATS */
@@ -155,9 +184,7 @@ h1 {
 }
 
 /* FORM */
-.field {
-  margin-top: 12px;
-}
+.field { margin-top: 12px; }
 label {
   display: block;
   font-weight: 600;
@@ -183,19 +210,4 @@ textarea {
 textarea:focus {
   border-color: #222;
   outline: none;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .controls {
-    justify-content: center;
-  }
-  .status {
-    margin-left: 0;
-    width: 100%;
-    justify-content: center;
-  }
-  .iconbar {
-    justify-content: center;
-  }
 }
