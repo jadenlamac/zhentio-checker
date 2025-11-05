@@ -199,3 +199,22 @@ textarea:focus {
   transform: scale(1);
 }
 
+/* === Alineación limpia de resultados === */
+.log-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.log-cc {
+  font-family: monospace;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.log-result {
+  min-width: 120px;
+  text-align: right;
+  font-weight: 700;
+}
