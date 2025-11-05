@@ -3,7 +3,8 @@
   "builds": [
     {
       "src": "api/app.py",
-      "use": "@vercel/python"
+      // SOLUCIÓN 1: Añadir la versión del runtime de Python
+      "use": "@vercel/python@3.9" 
     },
     {
       "src": "index.html",
@@ -23,7 +24,19 @@
     }
   ],
   "routes": [
+    // 1. REGLA: API (tiene prioridad)
     { "src": "^/api/(.*)$", "dest": "api/app.py" },
+
+    // 2. REGLA: Archivos de íconos (carpeta icons/)
+    { "src": "/icons/(.*)", "dest": "/icons/$1" },
+
+    // 3. REGLA: Archivos estáticos de la raíz (CSS, JS, etc.)
+    // Captura cualquier archivo con extensión .css, .js o .html de la raíz.
+    { "src": "/(.*\\.(css|js|html))$", "dest": "/$1" },
+    
+    // 4. REGLA: SPA / catch-all (va al final)
+    // Cualquier otra ruta que no sea un archivo estático o la API va a index.html
     { "src": "^(?!/api/).*$", "dest": "/index.html" }
   ]
 }
+
