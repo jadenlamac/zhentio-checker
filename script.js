@@ -1,3 +1,39 @@
+// ====== SONIDOS SIN ARCHIVOS (WEB AUDIO API) ======
+let _audioCtx;
+let _lastBeep = 0;
+
+function _ctx() {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return _audioCtx;
+}
+
+function _beep({ freq = 440, dur = 0.12, type = 'sine', vol = 0.15 }) {
+    const now = _ctx().currentTime;
+    if (now - _lastBeep < 0.05) return;
+    _lastBeep = now;
+    const osc = _ctx().createOscillator();
+    const gain = _ctx().createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    osc.connect(gain);
+    gain.connect(_ctx().destination);
+    osc.start(now);
+    osc.stop(now + dur);
+}
+
+// Beep doble agudo = LIVE (VIVA)
+function playLiveSound() {
+    _beep({ freq: 880, dur: 0.09, type: 'sine', vol: 0.18 });
+    setTimeout(() => _beep({ freq: 1046, dur: 0.11, type: 'sine', vol: 0.18 }), 110);
+}
+
+// Beep grave “buzz” corto = ERROR
+function playErrorSound() {
+    _beep({ freq: 220, dur: 0.18, type: 'square', vol: 0.16 });
+}
+
 // URL de tu backend Flask
 const FLASK_URL = 'https://doughtier-merilyn-catamenial.ngrok-free.dev';
 
@@ -11,7 +47,7 @@ const results = {
     TESTED: 0,
     VIVA: 0,
     MUERTA: 0,
-    ERROR: 0, // Incluye errores de red/API y DESCONOCIDO/COOKIE_EXPIRADA
+    ERROR: 0,
     COOKIE_EXPIRADA: 0,
     logs: []
 };
@@ -28,20 +64,16 @@ const statusDisplay = document.getElementById('checker-status');
 const logContainer = document.getElementById('log-container');
 const logFilterTitle = document.getElementById('log-filter-title');
 
-// Estos dos pueden NO existir si quitaste la topbar o el badge:
 const creditBadge = document.getElementById('credit-badge');
 const logoutBtn = document.querySelector('.btn.logout');
 
-// El puntito rojo existe porque está dentro de #checker-status
 const recDot = statusDisplay ? statusDisplay.querySelector('.rec') : null;
-
 const resultsSection = document.getElementById('results-section');
 const formSection = document.getElementById('form-section');
 
 // --- FUNCIONES DE UTILIDAD Y UI ---
 
 function updateStatus(message, isRunning = false) {
-    // Re-render del contenido para asegurar el span .rec
     if (statusDisplay) {
         statusDisplay.innerHTML = `<span class="rec ${isRunning ? 'active' : ''}"></span> ${message}`;
         const dot = statusDisplay.querySelector('.rec');
@@ -59,7 +91,6 @@ function updateStats() {
     safeSet('count-TESTED', results.TESTED);
     safeSet('count-TOTAL', results.TOTAL);
 
-    // Contadores en los íconos
     safeSet('icon-count-TOTAL', results.TOTAL);
     safeSet('icon-count-VIVA', results.VIVA);
     safeSet('icon-count-MUERTA', results.MUERTA);
@@ -67,7 +98,6 @@ function updateStats() {
 }
 
 function loadCredits() {
-    // Solo si existe el badge
     if (creditBadge) {
         creditBadge.innerHTML = `<span class="dot"></span> Sesión activa - <b>30 CRÉDITOS</b>`;
     }
@@ -128,16 +158,12 @@ function updateLogDisplay() {
         };
 
         item.className = 'log-item';
-
-        // ====== ÚNICO CAMBIO: solo una línea con CC + estado (sin N/A) ======
         item.innerHTML = `
             <div class="log-cc">
                 ${log.cc}
                 <span class="log-result result-${statusMap[estadoClase]}">${estadoTexto}</span>
             </div>
         `;
-        // =====================================================================
-
         if (logContainer) logContainer.appendChild(item);
     });
 }
@@ -174,6 +200,7 @@ async function checkCard(cc) {
                 flag: '🍪',
                 raw: data.mensaje
             });
+            playErrorSound();
             return 'COOKIE_EXPIRADA';
         }
 
@@ -186,6 +213,7 @@ async function checkCard(cc) {
                 flag: '❌',
                 raw: data.mensaje || `Error HTTP: ${response.status}`
             });
+            playErrorSound();
             return 'ERROR';
         }
 
@@ -197,6 +225,8 @@ async function checkCard(cc) {
             flag: data.flag || '',
             raw: data.raw || 'N/A'
         });
+
+        if (data.estado === 'VIVA') playLiveSound();
 
         return data.estado;
 
@@ -210,6 +240,7 @@ async function checkCard(cc) {
             flag: '🌐',
             raw: 'Error de conexión con el backend Flask.'
         });
+        playErrorSound();
         return 'ERROR';
     }
 }
@@ -238,11 +269,9 @@ async function startChecking() {
         if (!running || paused) break;
 
         const cc = ccList[currentIndex];
-
         await new Promise(r => setTimeout(r, 150));
 
         updateStatus(`Chequeando ${currentIndex + 1}/${results.TOTAL}: ${cc.substring(0, 6)}...`, true);
-
         const status = await checkCard(cc);
         results.TESTED++;
 
@@ -264,9 +293,7 @@ async function startChecking() {
         updateLogDisplay();
     }
 
-    if (running) {
-        updateStatus("Chequeo finalizado.", false);
-    }
+    if (running) updateStatus("Chequeo finalizado.", false);
 
     if (!paused) {
         running = false;
@@ -280,66 +307,54 @@ async function startChecking() {
 
 // --- EVENT LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicialización
     loadCredits();
     updateStats();
     updateStatus("Detenido. Esperando lista y cookie.", false);
     updateLogDisplay();
 
-    if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            paused = false;
-            startChecking();
-        });
-    }
+    if (startBtn) startBtn.addEventListener('click', () => {
+        paused = false;
+        startChecking();
+    });
 
-    if (pauseBtn) {
-        pauseBtn.addEventListener('click', () => {
-            if (running) {
-                running = false;
-                paused = true;
-                updateStatus(`PAUSADO. Index: ${currentIndex + 1}/${ccList.length}`, false);
-                if (startBtn) startBtn.disabled = false;
-                if (pauseBtn) pauseBtn.disabled = true;
-                if (stopBtn) stopBtn.disabled = false;
-            }
-        });
-    }
-
-    if (stopBtn) {
-        stopBtn.addEventListener('click', () => {
+    if (pauseBtn) pauseBtn.addEventListener('click', () => {
+        if (running) {
             running = false;
-            paused = false;
-            currentIndex = 0;
-            updateStatus("PARADO. Presione INICIAR para comenzar de nuevo.", false);
+            paused = true;
+            updateStatus(`PAUSADO. Index: ${currentIndex + 1}/${ccList.length}`, false);
             if (startBtn) startBtn.disabled = false;
             if (pauseBtn) pauseBtn.disabled = true;
-            if (stopBtn) stopBtn.disabled = true;
-        });
-    }
+            if (stopBtn) stopBtn.disabled = false;
+        }
+    });
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            if (running) return;
-            Object.keys(results).forEach(key => {
-                if (typeof results[key] === 'number') results[key] = 0;
-            });
-            results.logs = [];
-            if (ccListArea) ccListArea.value = '';
-            currentIndex = 0;
-            updateStats();
-            updateLogDisplay();
-            updateStatus("Detenido. Listas y resultados limpiados.", false);
-        });
-    }
+    if (stopBtn) stopBtn.addEventListener('click', () => {
+        running = false;
+        paused = false;
+        currentIndex = 0;
+        updateStatus("PARADO. Presione INICIAR para comenzar de nuevo.", false);
+        if (startBtn) startBtn.disabled = false;
+        if (pauseBtn) pauseBtn.disabled = true;
+        if (stopBtn) stopBtn.disabled = true;
+    });
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            alert("Sesión cerrada (simulación).");
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+        if (running) return;
+        Object.keys(results).forEach(key => {
+            if (typeof results[key] === 'number') results[key] = 0;
         });
-    }
+        results.logs = [];
+        if (ccListArea) ccListArea.value = '';
+        currentIndex = 0;
+        updateStats();
+        updateLogDisplay();
+        updateStatus("Detenido. Listas y resultados limpiados.", false);
+    });
 
-    // Manejo de filtros
+    if (logoutBtn) logoutBtn.addEventListener('click', () => {
+        alert("Sesión cerrada (simulación).");
+    });
+
     document.querySelectorAll('.iconbar .icon').forEach(icon => {
         icon.addEventListener('click', function () {
             document.querySelectorAll('.iconbar .icon').forEach(i => i.classList.remove('active'));
@@ -349,4 +364,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 
