@@ -11,18 +11,26 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: "Inter", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
+  display: flex;
+  justify-content: center;   /* centra horizontalmente */
+  align-items: center;       /* centra verticalmente */
 }
 
 /* PAGE */
 .page {
   max-width: 960px;
-  margin: 40px auto;
+  width: 100%;
   padding: 0 16px 40px;
+  margin: 0; /* elimina margen automático */
 }
 
 /* CARD */
