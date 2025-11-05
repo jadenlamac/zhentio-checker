@@ -8,12 +8,7 @@
   },
   "routes": [
     { "src": "^/api/(.*)$", "dest": "api/app.py" },
-
-    // Sirve archivos estáticos tal cual
     { "src": "^/(index\\.html|style\\.css|script\\.js|icons/.*)$", "dest": "/$1" },
-
-    // Cualquier otra ruta (no /api) manda al index.html
     { "src": "^(?!/api/).*$", "dest": "/index.html" }
   ]
 }
-
