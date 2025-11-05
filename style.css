@@ -21,8 +21,10 @@ body {
   background: var(--bg);
   color: var(--text);
   display: flex;
-  justify-content: center;   /* centra horizontalmente */
-  align-items: center;       /* centra verticalmente */
+  justify-content: center;
+  align-items: flex-start; /* ✅ corregido */
+  min-height: 100vh;       /* ✅ altura completa */
+  padding-top: 20px;       /* ✅ espacio arriba */
 }
 
 /* PAGE */
@@ -30,7 +32,7 @@ body {
   max-width: 960px;
   width: 100%;
   padding: 0 16px 40px;
-  margin: 0; /* elimina margen automático */
+  margin: 0;
 }
 
 /* CARD */
@@ -101,7 +103,7 @@ h1 {
   display: flex;
   gap: 10px;
   margin-top: 12px;
-  justify-content: flex-start; /* alineado a la izquierda */
+  justify-content: flex-start;
   align-items: center;
 }
 .icon {
@@ -114,8 +116,6 @@ h1 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
-  /* sin animaciones ni transiciones notorias */
   transition: none;
 }
 .icon img {
@@ -123,15 +123,11 @@ h1 {
   height: 18px;
   filter: brightness(1.3) sepia(1) hue-rotate(20deg) saturate(1.2);
 }
-
-/* SIN efectos al pasar o hacer clic */
-.icon:hover { background: #0d0d0d; }   /* no cambia */
+.icon:hover { background: #0d0d0d; }
 .icon.active {
-  border-color: #222;  /* sin dorado */
-  box-shadow: none;    /* sin glow */
+  border-color: #222;
+  box-shadow: none;
 }
-
-/* ocultar numeritos bajo cada svg */
 .icon-counter { display: none; }
 
 /* STATS */
@@ -193,3 +189,13 @@ textarea:focus {
   }
   .iconbar { justify-content: center; }
 }
+
+/* ✅ FIX: evitar reducción de tamaño al hacer clic */
+.icon, .btn {
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(1) !important;
+}
+.icon:active, .btn:active {
+  transform: scale(1);
+}
+
