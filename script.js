@@ -1,4 +1,4 @@
-// ====== SONIDOS SIN ARCHIVOS (WEB AUDIO API) ======
+// ====== SOUND SYSTEM (WEB AUDIO API) ======
 let _audioCtx;
 let _lastBeep = 0;
 
@@ -23,21 +23,21 @@ function _beep({ freq = 440, dur = 0.12, type = 'sine', vol = 0.15 }) {
     osc.stop(now + dur);
 }
 
-// Beep doble agudo = LIVE (VIVA)
+// High double beep = LIVE (APPROVED)
 function playLiveSound() {
     _beep({ freq: 880, dur: 0.09, type: 'sine', vol: 0.18 });
     setTimeout(() => _beep({ freq: 1046, dur: 0.11, type: 'sine', vol: 0.18 }), 110);
 }
 
-// Beep grave “buzz” corto = ERROR
+// Low short buzz = ERROR
 function playErrorSound() {
     _beep({ freq: 220, dur: 0.18, type: 'square', vol: 0.16 });
 }
 
-// URL de tu backend Flask
+// Backend URL (Flask)
 const FLASK_URL = 'https://doughtier-merilyn-catamenial.ngrok-free.dev';
 
-// --- ESTADO GLOBAL ---
+// --- GLOBAL STATE ---
 let ccList = [];
 let running = false;
 let paused = false;
@@ -53,7 +53,7 @@ const results = {
 };
 let currentFilter = 'all';
 
-// --- REFERENCIAS DOM ---
+// --- DOM REFS ---
 const cookieArea = document.getElementById('cookie-area');
 const ccListArea = document.getElementById('cc-list-area');
 const startBtn = document.getElementById('start-btn');
@@ -71,7 +71,7 @@ const recDot = statusDisplay ? statusDisplay.querySelector('.rec') : null;
 const resultsSection = document.getElementById('results-section');
 const formSection = document.getElementById('form-section');
 
-// --- FUNCIONES DE UTILIDAD Y UI ---
+// --- UI & UTILS ---
 
 function updateStatus(message, isRunning = false) {
     if (statusDisplay) {
@@ -99,11 +99,11 @@ function updateStats() {
 
 function loadCredits() {
     if (creditBadge) {
-        creditBadge.innerHTML = `<span class="dot"></span> Sesión activa - <b>30 CRÉDITOS</b>`;
+        creditBadge.innerHTML = `<span class="dot"></span> Active session - <b>30 CREDITS</b>`;
     }
 }
 
-// Mostrar CC con su estado real (VIVA / MUERTA / COOKIE EXPIRADA)
+// Show CCs by status (APPROVED / DECLINED / EXPIRED)
 function updateLogDisplay() {
     if (!resultsSection || !formSection) return;
 
@@ -121,7 +121,6 @@ function updateLogDisplay() {
 
     if (currentFilter !== 'all') {
         if (currentFilter === 'ERROR') {
-            // Mostrar en la pestaña ERROR: ERROR, COOKIE_EXPIRADA, DESCONOCIDO
             filteredLogs = results.logs.filter(log =>
                 log.estado === 'ERROR' || log.estado === 'COOKIE_EXPIRADA' || log.estado === 'DESCONOCIDO'
             );
@@ -130,11 +129,18 @@ function updateLogDisplay() {
         }
     }
 
+    // ✅ English titles for filters
     if (logFilterTitle) {
-        logFilterTitle.textContent = currentFilter === 'all' ? 'Todas' : currentFilter;
+        const names = {
+            all: 'All',
+            VIVA: 'Approved',
+            MUERTA: 'Declined',
+            ERROR: 'Errors'
+        };
+        logFilterTitle.textContent = names[currentFilter] || 'All';
     }
 
-    // Reversa para mostrar lo último arriba
+    // Reverse order: latest on top
     filteredLogs.slice().reverse().forEach(log => {
         const item = document.createElement('div');
         item.className = 'log-item';
@@ -144,17 +150,16 @@ function updateLogDisplay() {
 
         if (log.estado === 'VIVA') {
             emoji = '✅';
-            displayText = 'VIVA';
+            displayText = 'APPROVED';
         } else if (log.estado === 'MUERTA') {
             emoji = '❌';
-            displayText = 'MUERTA';
+            displayText = 'DECLINED';
         } else if (log.estado === 'COOKIE_EXPIRADA' || log.estado === 'ERROR' || log.estado === 'DESCONOCIDO') {
             emoji = '⚠️';
-            displayText = 'COOKIE EXPIRADA';
+            displayText = 'EXPIRED';
         } else {
-            // Cualquier otro caso no esperado se muestra como MUERTA
             emoji = '❌';
-            displayText = 'MUERTA';
+            displayText = 'DECLINED';
         }
 
         item.innerHTML = `
@@ -172,14 +177,13 @@ function formatCard(cc) {
     return cc.replace(/[^0-9|]/g, '').trim();
 }
 
-// --- LÓGICA PRINCIPAL DEL CHECKER ---
+// --- CHECKER LOGIC ---
 
 async function checkCard(cc) {
     const cookie = cookieArea ? cookieArea.value.trim() : '';
     const formattedCC = formatCard(cc);
 
     if (!cookie || !formattedCC) {
-        // keep behavior: return ERROR so calling code handles counters and sounds
         results.logs.push({ estado: 'ERROR', cc: formattedCC || cc });
         return 'ERROR';
     }
@@ -193,42 +197,38 @@ async function checkCard(cc) {
 
         const data = await response.json();
 
-        // COOKIE EXPIRADA -> treated as ERROR (plays error sound) but will display as MUERTA
         if (data.estado === 'COOKIE_EXPIRADA') {
             results.logs.push({ estado: 'COOKIE_EXPIRADA', cc: formattedCC, raw: data.mensaje });
             playErrorSound();
             return 'COOKIE_EXPIRADA';
         }
 
-        // HTTP error or backend-declared error/unknown
         if (!response.ok || data.estado === 'ERROR' || data.estado === 'DESCONOCIDO') {
             results.logs.push({
-                estado: data.estado === 'ERROR' ? 'ERROR' : 'DESCONOCIDO',
+                estado: data.estado === 'ERROR' ? 'ERROR' : 'UNKNOWN',
                 cc: formattedCC,
-                raw: data.mensaje || `Error HTTP: ${response.status}`
+                raw: data.mensaje || `HTTP Error: ${response.status}`
             });
             playErrorSound();
             return 'ERROR';
         }
 
-        // Success cases: store minimal info
         results.logs.push({
             estado: data.estado,
             cc: formattedCC,
             raw: data.raw || ''
         });
 
-        // Only play live sound if VIVA
         if (data.estado === 'VIVA') playLiveSound();
 
         return data.estado;
 
     } catch (error) {
-        console.error("Error al chequear tarjeta (Fallo de red/CORS):", error);
+        console.error("Card check error (Network/CORS):", error);
         results.logs.push({
             estado: 'ERROR',
             cc: formattedCC,
-            raw: 'Error de conexión con el backend Flask.'
+            raw: 'Connection error with backend.'
         });
         playErrorSound();
         return 'ERROR';
@@ -242,7 +242,7 @@ async function startChecking() {
     results.TOTAL = ccList.length;
 
     if (results.TOTAL === 0) {
-        updateStatus("ERROR: No hay tarjetas en la lista.", false);
+        updateStatus("Error: Empty list.", false);
         return;
     }
 
@@ -253,7 +253,7 @@ async function startChecking() {
     if (startBtn) startBtn.disabled = true;
     if (pauseBtn) pauseBtn.disabled = false;
     if (stopBtn) stopBtn.disabled = false;
-    updateStatus(`Iniciando chequeo... Tarjetas: ${results.TOTAL}`, true);
+    updateStatus(`Starting check... Total: ${results.TOTAL}`, true);
 
     for (; currentIndex < ccList.length; currentIndex++) {
         if (!running || paused) break;
@@ -261,7 +261,7 @@ async function startChecking() {
         const cc = ccList[currentIndex];
         await new Promise(r => setTimeout(r, 150));
 
-        updateStatus(`Chequeando ${currentIndex + 1}/${results.TOTAL}: ${cc.substring(0, 6)}...`, true);
+        updateStatus(`Checking ${currentIndex + 1}/${results.TOTAL}: ${cc.substring(0, 6)}...`, true);
         const status = await checkCard(cc);
         results.TESTED++;
 
@@ -271,7 +271,7 @@ async function startChecking() {
             results.MUERTA++;
         } else if (status === 'COOKIE_EXPIRADA') {
             results.COOKIE_EXPIRADA++;
-            updateStatus("COOKIE EXPIRADA. Proceso detenido.", false);
+            updateStatus("Cookie expired. Stopped.", false);
             running = false;
             paused = false;
             break;
@@ -283,7 +283,7 @@ async function startChecking() {
         updateLogDisplay();
     }
 
-    if (running) updateStatus("Chequeo finalizado.", false);
+    if (running) updateStatus("Check complete.", false);
 
     if (!paused) {
         running = false;
@@ -291,7 +291,7 @@ async function startChecking() {
         if (pauseBtn) pauseBtn.disabled = true;
         if (stopBtn) stopBtn.disabled = true;
     } else {
-        updateStatus(`PAUSADO. Index: ${currentIndex + 1}/${ccList.length}`, false);
+        updateStatus(`Paused at ${currentIndex + 1}/${ccList.length}`, false);
     }
 }
 
@@ -299,7 +299,7 @@ async function startChecking() {
 document.addEventListener('DOMContentLoaded', () => {
     loadCredits();
     updateStats();
-    updateStatus("Detenido. Esperando lista y cookie.", false);
+    updateStatus("Stopped. Waiting list + cookie.", false);
     updateLogDisplay();
 
     if (startBtn) {
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (running) {
                 running = false;
                 paused = true;
-                updateStatus(`PAUSADO. Index: ${currentIndex + 1}/${ccList.length}`, false);
+                updateStatus(`Paused at ${currentIndex + 1}/${ccList.length}`, false);
                 if (startBtn) startBtn.disabled = false;
                 if (pauseBtn) pauseBtn.disabled = true;
                 if (stopBtn) stopBtn.disabled = false;
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             running = false;
             paused = false;
             currentIndex = 0;
-            updateStatus("PARADO. Presione INICIAR para comenzar de nuevo.", false);
+            updateStatus("Stopped. Press start again.", false);
             if (startBtn) startBtn.disabled = false;
             if (pauseBtn) pauseBtn.disabled = true;
             if (stopBtn) stopBtn.disabled = true;
@@ -345,17 +345,17 @@ document.addEventListener('DOMContentLoaded', () => {
             currentIndex = 0;
             updateStats();
             updateLogDisplay();
-            updateStatus("Detenido. Listas y resultados limpiados.", false);
+            updateStatus("Cleared all data.", false);
         });
     }
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            alert("Sesión cerrada (simulación).");
+            alert("Session closed (mock).");
         });
     }
 
-    // Manejo de filtros
+    // Filter handling
     document.querySelectorAll('.iconbar .icon').forEach(icon => {
         icon.addEventListener('click', function () {
             document.querySelectorAll('.iconbar .icon').forEach(i => i.classList.remove('active'));
@@ -365,3 +365,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
