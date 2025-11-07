@@ -129,7 +129,6 @@ function updateLogDisplay() {
         }
     }
 
-    // ✅ English titles for filters
     if (logFilterTitle) {
         const names = {
             all: 'All',
@@ -140,7 +139,6 @@ function updateLogDisplay() {
         logFilterTitle.textContent = names[currentFilter] || 'All';
     }
 
-    // Reverse order: latest on top
     filteredLogs.slice().reverse().forEach(log => {
         const item = document.createElement('div');
         item.className = 'log-item';
@@ -238,6 +236,10 @@ async function checkCard(cc) {
 async function startChecking() {
     if (running) return;
 
+    // ✅ Reinicia los contadores al volver a iniciar
+    results.TESTED = 0;
+    currentIndex = 0;
+
     ccList = ccListArea ? ccListArea.value.split('\n').map(c => c.trim()).filter(c => c.length > 0) : [];
     results.TOTAL = ccList.length;
 
@@ -248,7 +250,6 @@ async function startChecking() {
 
     running = true;
     paused = false;
-    currentIndex = results.TESTED;
 
     if (startBtn) startBtn.disabled = true;
     if (pauseBtn) pauseBtn.disabled = false;
@@ -281,6 +282,13 @@ async function startChecking() {
 
         updateStats();
         updateLogDisplay();
+
+        // ✅ Quita del textarea la tarjeta ya chequeada
+        if (ccListArea) {
+            const lines = ccListArea.value.split('\n');
+            lines.shift();
+            ccListArea.value = lines.join('\n');
+        }
     }
 
     if (running) updateStatus("Check complete.", false);
@@ -355,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Filter handling
     document.querySelectorAll('.iconbar .icon').forEach(icon => {
         icon.addEventListener('click', function () {
             document.querySelectorAll('.iconbar .icon').forEach(i => i.classList.remove('active'));
@@ -365,5 +372,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
-
