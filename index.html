@@ -19,23 +19,23 @@
             <div class="controls">
                 <button class="btn" id="start-btn">
                     <img src="icons/iniciar.svg" alt="Iniciar" style="width: 18px; vertical-align: middle; margin-right: 6px;">
-                    INICIAR
+                    START  
                 </button>
                 <button class="btn" id="pause-btn" disabled>
                     <img src="icons/pausar.svg" alt="Pausar" style="width: 18px; vertical-align: middle; margin-right: 6px;">
-                    PAUSAR
+                    PAUSE  
                 </button>
                 <button class="btn" id="stop-btn" disabled>
                     <img src="icons/parar.svg" alt="Parar" style="width: 18px; vertical-align: middle; margin-right: 6px;">
-                    PARAR
+                    STOP  
                 </button>
                 <button class="btn" id="clear-btn">
                     <img src="icons/limpiar.svg" alt="Limpiar" style="width: 18px; vertical-align: middle; margin-right: 6px;">
-                    LIMPIAR
+                    CLEAR
                 </button>
 
                 <div class="status" id="checker-status">
-                    <span class="rec"></span> Detenido.
+                    <span class="rec"></span> Stopped.
                 </div>
             </div>
 
@@ -44,15 +44,15 @@
                     <img src="icons/card.svg" alt="Card">
                     <span class="icon-counter" id="icon-count-TOTAL">0</span>
                 </button>
-                <button class="icon" data-filter="VIVA" title="Aprobadas">
+                <button class="icon" data-filter="VIVA" title="Approved">
                     <img src="icons/like.svg" alt="Like">
                     <span class="icon-counter" id="icon-count-VIVA">0</span>
                 </button>
-                <button class="icon" data-filter="MUERTA" title="Reprobadas">
+                <button class="icon" data-filter="MUERTA" title="Declined">
                     <img src="icons/dislike.svg" alt="Dislike">
                     <span class="icon-counter" id="icon-count-MUERTA">0</span>
                 </button>
-                <button class="icon" data-filter="ERROR" title="Errores">
+                <button class="icon" data-filter="ERROR" title="Error">
                     <img src="icons/close.svg" alt="Error">
                     <span class="icon-counter" id="icon-count-ERROR">0</span>
                 </button>
@@ -77,7 +77,7 @@
                     > 
                     Cookies
                 </label>
-                <p class="hint">Pega aquí la cadena completa de tu cookie.</p>
+                <p class="hint">Paste your full cookie.</p>
                 <textarea id="cookie-area"></textarea>
             </div>
             <div class="field">
@@ -89,7 +89,7 @@
                     > 
                     Lista de tarjetas:
                 </label>
-                <p class="hint">Ingrese su lista (formato CC|MM|AAAA|CVV) una por línea.</p>
+                <p class="hint">Card list (formato CC|MM|AAAA|CVV) .</p>
                 <textarea id="cc-list-area"></textarea>
             </div>
         </section>
@@ -103,5 +103,6 @@
     <script src="script.js"></script>    
 </body>
 </html>
+
 
 
